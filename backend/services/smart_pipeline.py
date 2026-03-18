@@ -1,4 +1,4 @@
-from langchain.schema.runnable import RunnableLambda, RunnableBranch
+from langchain_core.runnables import RunnableLambda, RunnableBranch
 from services.splitter import split_text
 from services.summarizer import summarize_all
 from services.llm import get_llm
