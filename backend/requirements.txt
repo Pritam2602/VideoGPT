@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+langchain
+langchain-google-genai
+langchain-community
+google-generativeai
+yt-dlp
+openai-whisper
+tiktoken
+faiss-cpu
