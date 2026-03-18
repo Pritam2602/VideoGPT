@@ -1,6 +1,6 @@
-# 🎥 VidMind AI
+# 🎥 VideoGPT 
 
-VidMind AI is a full-stack Generative AI application that transforms video content into structured knowledge and enables conversational querying using Retrieval-Augmented Generation (RAG).
+VideoGPT is a full-stack Generative AI application that transforms video content into structured knowledge and enables conversational querying using Retrieval-Augmented Generation (RAG).
 
 ---
 
