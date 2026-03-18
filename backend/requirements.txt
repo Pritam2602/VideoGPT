@@ -9,3 +9,5 @@ yt-dlp
 openai-whisper
 tiktoken
 faiss-cpu
+sentence-transformers
+langchain-huggingface

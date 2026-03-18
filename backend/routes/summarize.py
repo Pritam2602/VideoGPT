@@ -13,6 +13,7 @@ class SummarizeRequest(BaseModel):
 class SummarizeResponse(BaseModel):
     """Response body for the /summarize endpoint."""
     article: str
+    video_id: str
 
 
 @router.post("/summarize", response_model=SummarizeResponse)
@@ -24,7 +25,7 @@ async def summarize_video(data: SummarizeRequest):
     a well-structured article generated via the LangChain pipeline.
     """
     try:
-        article = generate_article(data.url)
-        return SummarizeResponse(article=article)
+        article, video_id = generate_article(data.url)
+        return SummarizeResponse(article=article, video_id=video_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

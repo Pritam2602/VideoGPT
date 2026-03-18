@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.summarize import router as summarize_router
+from routes.chat import router as chat_router
+from services.vector_store import load_vector_store
 
 app = FastAPI(
     title="VideoGPT API",
@@ -8,6 +10,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+load_vector_store()
 # CORS — allow the React frontend to call the API
 app.add_middleware(
     CORSMiddleware,
@@ -19,6 +22,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(summarize_router)
+app.include_router(chat_router)
 
 
 @app.get("/")

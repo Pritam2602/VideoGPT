@@ -1,15 +1,14 @@
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
-from config import GOOGLE_API_KEY
+import os
 
-# Embedding model for vector similarity search
-embedding = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
-    google_api_key=GOOGLE_API_KEY,
+FAISS_PATH = "faiss_index"
+
+embedding = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
-# In-memory vector store (persists for the lifetime of the server)
 vector_db = None
 
 
@@ -24,6 +23,7 @@ def create_vector_store(chunks: list[str], video_id: str):
         chunks: List of text chunks from a transcript.
         video_id: Unique identifier for the video (e.g., YouTube video ID).
     """
+
     global vector_db
 
     docs = [
@@ -36,6 +36,24 @@ def create_vector_store(chunks: list[str], video_id: str):
     else:
         vector_db.add_documents(docs)
 
+    
+    vector_db.save_local(FAISS_PATH)
+
+def load_vector_store():
+    """Load FAISS from disk if exists."""
+    global vector_db
+
+    if os.path.exists(FAISS_PATH):
+        try:
+            vector_db = FAISS.load_local(
+                FAISS_PATH,
+                embedding,
+                allow_dangerous_deserialization=True
+            )
+            print(" FAISS index loaded from disk")
+        except Exception as e:
+            print(" Failed to load FAISS:", e)
+            vector_db = None
 
 def get_retriever(video_id: str = None):
     """
@@ -51,11 +69,16 @@ def get_retriever(video_id: str = None):
     Raises:
         ValueError: If no videos have been indexed yet.
     """
+
     if vector_db is None:
-        raise ValueError("No videos have been indexed yet. Process a video first.")
+        load_vector_store()
+
+    if vector_db is None:
+        raise ValueError("No videos indexed yet.")
 
     if video_id:
         return vector_db.as_retriever(
             search_kwargs={"k": 4, "filter": {"video_id": video_id}}
         )
+
     return vector_db.as_retriever(search_kwargs={"k": 4})
